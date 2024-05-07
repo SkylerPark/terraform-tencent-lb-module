@@ -15,7 +15,7 @@ variable "access_log" {
   description = <<EOF
   (선택) access log 에 대한 설정. `access_log` 블록 내용.
     (선택) `enabled` - access log 를 활성화 할지에 대한 여부 Default: `false`.
-    (선택) `period` - access log 보존일 설정 최대값 `90`.
+    (선택) `period` - access log 보존일 설정 최대값 `90` Default: `1`.
     (선택) `topic_name` - access log 토픽 이름.
   EOF
   type = object({
@@ -92,6 +92,12 @@ variable "bandwidth_max_out" {
   }
 }
 
+variable "bandwidth_package_id" {
+  description = "(선택) `is_public` `true` 일때 설정. 대역폭 패키지 ID."
+  type        = string
+  default     = null
+}
+
 variable "charge_type" {
   description = "(선택) `is_public` `true` 일때 설정. 인터넷 요금에 대한 과금 방식. 가능한 값은 `TRAFFIC_POSTPAID_BY_HOUR`, `BANDWIDTH_POSTPAID_BY_HOUR`, `BANDWIDTH_PACKAGE`  Default: `TRAFFIC_POSTPAID_BY_HOUR`"
   type        = string
@@ -103,11 +109,11 @@ variable "charge_type" {
   }
 }
 
-variable "sla" {
+variable "lcu" {
   description = <<EOF
-  (선택) load balancer 스펙을 지정할때 사용합니다. 해당 `https://www.tencentcloud.com/document/product/214/54820?has_map=1` 자세한 내용은 문서를 참고. `sla` 블록 내용.
-    (선택) `enabled` - load balancer 스펙을 사용할지에 대한 여부. Default: `false`
-    (선택) `type` - load balancer LSU 에 대한 type. 가능한 값 `STANDARD`, `ADVANCED_1`, `ADVANCED_2`, `SUPER_LARGE_1`, `SUPER_LARGE_2`, `SUPER_LARGE_3`, `SUPER_LARGE_4`. Default: `STANDARD`
+  (선택) LCU 지원 인스턴스에 대한 설정 `lcu` 블록 내용.
+    (선택) `enabled` - LCU 지원 인스턴스를 활성화 할지에 대한 여부. Default: `false`
+    (선택) `type` - LCU 지원 인스턴스 type `https://www.tencentcloud.com/document/product/214/54820?has_map=1` 참고. `STANDARD`, `ADVANCED_1`, `ADVANCED_2`, `SUPER_LARGE_1`, `SUPER_LARGE_2`, `SUPER_LARGE_3`, `SUPER_LARGE_4` 설정 가능. Default: `STANDARD`
   EOF
   type = object({
     enabled = optional(bool, false)
@@ -115,10 +121,9 @@ variable "sla" {
   })
   default  = {}
   nullable = false
-
   validation {
-    condition     = var.sla.enabled ? contains(["STANDARD", "ADVANCED_1", "ADVANCED_2", "SUPER_LARGE_1", "SUPER_LARGE_2", "SUPER_LARGE_3", "SUPER_LARGE_4"], var.sla.type) : true
-    error_message = "sla type 은 `STANDARD`, `ADVANCED_1`, `ADVANCED_2`, `SUPER_LARGE_1`, `SUPER_LARGE_2`, `SUPER_LARGE_3`, `SUPER_LARGE_4` 중 하나만 가능."
+    condition     = contains(["STANDARD", "ADVANCED_1", "ADVANCED_2", "SUPER_LARGE_1", "SUPER_LARGE_2", "SUPER_LARGE_3", "SUPER_LARGE_4"], var.lcu.type)
+    error_message = "`lcu type` 이 잘못 되었습니다. `STANDARD`, `ADVANCED_1`, `ADVANCED_2`, `SUPER_LARGE_1`, `SUPER_LARGE_2`, `SUPER_LARGE_3`, `SUPER_LARGE_4` 중 하나를 선택 해 주세요."
   }
 }
 
@@ -126,4 +131,21 @@ variable "tags" {
   description = "(선택) 리소스 태그 내용"
   type        = map(string)
   default     = {}
+}
+
+variable "listeners" {
+  description = <<EOF
+  (선택) load balancer 리스너 목록 입니다. `listeners` 블록 내용.
+    (필수) `port` - load balancer 리스너 포트 정보.
+    (필수) `protocol` - load balancer 리스너 protocol 정보. 가능 한 값`HTTP` and `HTTPS`.
+    (선택) `rules` - 리스너에 정의되는 규칙에 따라 로드 밸런서가 하나 이상의 대상 그룹에 있는 대상으로 요청을 라우팅하는 방법을 정의.
+    (선택) `tls` - TLS Listener 에 필요한 설정. `protocol` 이 `HTTPS` 일때 사용. `tls` 블록 내용.
+      (선택) `certificate_mode` - 인증서 유형을 지정합니다 유효한 값. `UNIDIRECTIONAL`, `MUTUAL` Default: `UNIDIRECTIONAL`.
+      (선택) `certificate` - SSL certificate arn.
+      (선택) `certificate_ca` - 클라이언트 인증서 ID
+      (선택) `sni_enabled` - SNI 활성화 여부 Default: `false`.
+  EOF
+  type        = any
+  default     = []
+  nullable    = false
 }
