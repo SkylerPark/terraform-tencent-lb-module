@@ -1,4 +1,4 @@
-output "source" {
+output "redirection_source" {
   description = "redirection 되는 정보"
   value = {
     listener = tencentcloud_clb_redirection.this.source_listener_id
@@ -6,7 +6,7 @@ output "source" {
   }
 }
 
-output "target" {
+output "redirection_target" {
   description = "redirection 대상 정보"
   value = {
     listener = tencentcloud_clb_redirection.this.target_listener_id

@@ -137,13 +137,14 @@ variable "listeners" {
   description = <<EOF
   (선택) load balancer 리스너 목록 입니다. `listeners` 블록 내용.
     (필수) `port` - load balancer 리스너 포트 정보.
-    (필수) `protocol` - load balancer 리스너 protocol 정보. 가능 한 값`HTTP` and `HTTPS`.
-    (선택) `rules` - 리스너에 정의되는 규칙에 따라 로드 밸런서가 하나 이상의 대상 그룹에 있는 대상으로 요청을 라우팅하는 방법을 정의.
-    (선택) `tls` - TLS Listener 에 필요한 설정. `protocol` 이 `HTTPS` 일때 사용. `tls` 블록 내용.
+    (필수) `protocol` - load balancer 리스너 protocol 정보. 가능 한 값 `TCP`, `TCP_TLS`, `UDP`.
+    (선택) `health_check` - load balancer 리스너 health check 정보.
+    (선택) `load_balancing_algorithm_type` - 리스너의 스케쥴링 방법. `WRR`, `IPHASH`. `LEAST_CONN` 이 허용. Default: `LEAST_CONN`
+    (선택) `session_expire_time` - 수신시 내 세션 지속 시간.
+    (선택) `tls` - TLS Listener 에 필요한 설정. `protocol` 이 `TCP_TLS` 일때 사용. `tls` 블록 내용.
       (선택) `certificate_mode` - 인증서 유형을 지정합니다 유효한 값. `UNIDIRECTIONAL`, `MUTUAL` Default: `UNIDIRECTIONAL`.
       (선택) `certificate` - SSL certificate arn.
       (선택) `certificate_ca` - 클라이언트 인증서 ID
-      (선택) `sni_enabled` - SNI 활성화 여부 Default: `false`.
   EOF
   type        = any
   default     = []

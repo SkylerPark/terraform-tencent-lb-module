@@ -65,7 +65,7 @@ variable "rules" {
       (선택) `certificate` - SSL certificate arn.
       (선택) `certificate_ca` - 클라이언트 인증서 ID
     (선택) `load_balancing_algorithm_type` - 리스너의 스케쥴링 방법. `WRR`, `IPHASH`. `LEAST_CONN` 이 허용. Default: `LEAST_CONN`
-    (선택) `session_expire_time` - 수신시 내 세션 지속 시간.
+    (선택) `session_expire_time` - `load_balancing_algorithm_type` 이 `WRR` 일때 사용. 수신시 내 세션 지속 시간."
     (선택) `target_type` - 백엔드 대상 유형 `NODE`, `TARGETGROUP` 으로 설정 가능. Default: `NODE`
   EOF
   type        = any

@@ -4,7 +4,7 @@ variable "load_balancer" {
   nullable    = false
 }
 
-variable "target" {
+variable "redirection_target" {
   description = <<EOF
   (선택) 대상이 되는 정보 `target` 블록 내용.
     (선택) `listener` - 대상 listener ID.
@@ -17,7 +17,7 @@ variable "target" {
   default = {}
 }
 
-variable "source" {
+variable "redirection_source" {
   description = <<EOF
   (선택) redirection 이 될 정보 `source` 블록 내용.
     (선택) `listener` - 대상 listener ID.

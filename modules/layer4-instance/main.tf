@@ -18,7 +18,7 @@ locals {
 }
 
 module "access_log" {
-  source     = "../logging"
+  source     = "../lb-logging"
   count      = var.access_log.enabled ? 1 : 0
   period     = var.access_log.period
   topic_name = var.access_log.topic_name
@@ -36,7 +36,7 @@ resource "tencentcloud_clb_instance" "this" {
   log_set_id   = var.access_log.enabled ? module.access_log.log_set_id : null
   log_topic_id = var.access_log.enabled ? module.access_log.log_topic_id : null
 
-  delete_protect = var.delete_protect
+  delete_protect = var.delete_protect_enabled
 
   internet_bandwidth_max_out = var.is_public ? var.bandwidth_max_out : null
   bandwidth_package_id       = var.is_public ? var.bandwidth_package_id : null
@@ -44,7 +44,7 @@ resource "tencentcloud_clb_instance" "this" {
 
   master_zone_id = local.cross_zone_enabled && var.is_public ? var.availability_zones[0] : null
   slave_zone_id  = local.cross_zone_enabled && var.is_public ? var.availability_zones[1] : null
-  zone_id        = !local.cross_zone_enabled && var.is_public ? var.availability_zones[0] : null
+  zone_id        = !local.cross_zone_enabled && var.is_public ? try(var.availability_zones[0], null) : null
 
   sla_type = var.lcu.enabled ? local.sla_type[var.lcu.type] : null
 
@@ -59,15 +59,17 @@ module "listener" {
   }
 
   load_balancer = tencentcloud_clb_instance.this.id
+  name          = "${var.name}-${each.key}"
   port          = each.key
   protocol      = each.value.protocol
 
-  rules = try(each.value.rules, {})
+  health_check                  = try(each.value.health_check, {})
+  load_balancing_algorithm_type = each.value.load_balancing_algorithm_type
+  session_expire_time           = try(each.value.session_expire_time, null)
 
   tls = {
     certificate_mode = try(each.value.tls.certificate_mode, null)
     certificate      = try(each.value.tls.certificate, null)
     certificate_ca   = try(each.value.tls.certificate_ca, null)
-    sni_enabled      = try(each.value.tls.sni_enabled, null)
   }
 }

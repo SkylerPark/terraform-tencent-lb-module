@@ -4,7 +4,7 @@ resource "tencentcloud_clb_attachment" "this" {
   rule_id     = var.rule
 
   dynamic "targets" {
-    for_each = [var.targets]
+    for_each = var.targets
     content {
       instance_id = targets.value.instance_id
       port        = targets.value.port

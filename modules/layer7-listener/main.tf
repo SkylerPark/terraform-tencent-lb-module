@@ -14,7 +14,7 @@ resource "tencentcloud_clb_listener" "this" {
 resource "tencentcloud_clb_listener_rule" "this" {
   for_each = {
     for rule in var.rules :
-    "${rule.domain}-${rule.url}" => rule
+    "${rule.domain}${rule.url}" => rule
   }
   clb_id      = var.load_balancer
   listener_id = tencentcloud_clb_listener.this.listener_id

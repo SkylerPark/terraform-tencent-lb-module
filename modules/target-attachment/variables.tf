@@ -11,9 +11,9 @@ variable "listener" {
 }
 
 variable "rule" {
-  description = "(필수) Rule ID"
+  description = "(선택) Rule ID"
   type        = string
-  nullable    = false
+  default     = null
 }
 
 variable "targets" {
@@ -23,11 +23,11 @@ variable "targets" {
     (필수) `port` - 대상이 되는 instance Port.
     (선택) `weight` - 대상에 대한 가중치 Default: `100`
   EOF
-  type = map(object({
+  type = list(object({
     instance_id = optional(string)
     port        = optional(number)
     weight      = optional(number, 100)
   }))
-  default  = {}
+  default  = []
   nullable = false
 }
