@@ -94,7 +94,7 @@ variable "health_check" {
 
 
 variable "load_balancing_algorithm_type" {
-  description = "(선택) 리스너의 스케쥴링 방법. `WRR`, `IPHASH`. `LEAST_CONN` 이 허용. Default: `LEAST_CONN`"
+  description = "(선택) 리스너의 스케쥴링 방법. `WRR`, `IP_HASH`. `LEAST_CONN` 이 허용. Default: `LEAST_CONN`"
   type        = string
   default     = "LEAST_CONN"
   nullable    = false
