@@ -50,3 +50,8 @@ output "listeners" {
   description = "load balancer listener 리스트"
   value       = module.listener
 }
+
+output "public_ip" {
+  description = "load balancer Public IP"
+  value       = var.eip_enabled ? tencentcloud_eip.this[0].public_ip : null
+}

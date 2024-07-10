@@ -72,3 +72,22 @@ module "listener" {
     sni_enabled      = try(each.value.tls.sni_enabled, null)
   }
 }
+
+###################################################
+# ElasticIP
+###################################################
+resource "tencentcloud_eip" "this" {
+  count                      = var.eip_enabled ? 1 : 0
+  name                       = var.name
+  internet_charge_type       = var.charge_type
+  internet_max_bandwidth_out = var.bandwidth_max_out
+  type                       = "EIP"
+
+  tags = merge(var.tags, var.eip_tags)
+}
+
+resource "tencentcloud_eip_association" "this" {
+  count       = var.eip_enabled ? 1 : 0
+  eip_id      = tencentcloud_eip.this[count.index].id
+  instance_id = tencentcloud_clb_instance.this.id
+}

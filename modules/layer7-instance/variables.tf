@@ -149,3 +149,18 @@ variable "listeners" {
   default     = []
   nullable    = false
 }
+
+###################################################
+# ElasticIP
+###################################################
+variable "eip_enabled" {
+  description = "(선택) LB 에 Elastic IP 할당 여부"
+  type        = bool
+  default     = false
+}
+
+variable "eip_tags" {
+  description = "(선택) ElasticIP 태그 내용"
+  type        = map(string)
+  default     = {}
+}

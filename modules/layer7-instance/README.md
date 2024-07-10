@@ -26,6 +26,8 @@
 | Name | Type |
 |------|------|
 | [tencentcloud_clb_instance.this](https://registry.terraform.io/providers/tencentcloudstack/tencentcloud/latest/docs/resources/clb_instance) | resource |
+| [tencentcloud_eip.this](https://registry.terraform.io/providers/tencentcloudstack/tencentcloud/latest/docs/resources/eip) | resource |
+| [tencentcloud_eip_association.this](https://registry.terraform.io/providers/tencentcloudstack/tencentcloud/latest/docs/resources/eip_association) | resource |
 
 ## Inputs
 
@@ -37,6 +39,8 @@
 | <a name="input_bandwidth_package_id"></a> [bandwidth\_package\_id](#input\_bandwidth\_package\_id) | (선택) `is_public` `true` 일때 설정. 대역폭 패키지 ID. | `string` | `null` | no |
 | <a name="input_charge_type"></a> [charge\_type](#input\_charge\_type) | (선택) `is_public` `true` 일때 설정. 인터넷 요금에 대한 과금 방식. 가능한 값은 `TRAFFIC_POSTPAID_BY_HOUR`, `BANDWIDTH_POSTPAID_BY_HOUR`, `BANDWIDTH_PACKAGE`  Default: `TRAFFIC_POSTPAID_BY_HOUR` | `string` | `"TRAFFIC_POSTPAID_BY_HOUR"` | no |
 | <a name="input_delete_protect_enabled"></a> [delete\_protect\_enabled](#input\_delete\_protect\_enabled) | (선택) load balancer instance 삭제 방지 유무. default: `false` | `bool` | `false` | no |
+| <a name="input_eip_enabled"></a> [eip\_enabled](#input\_eip\_enabled) | (선택) LB 에 Elastic IP 할당 여부 | `bool` | `false` | no |
+| <a name="input_eip_tags"></a> [eip\_tags](#input\_eip\_tags) | (선택) ElasticIP 태그 내용 | `map(string)` | `{}` | no |
 | <a name="input_is_public"></a> [is\_public](#input\_is\_public) | (필수) load balancer 가 public 으로 할당할지 여부 Default: `true` | `bool` | `true` | no |
 | <a name="input_lcu"></a> [lcu](#input\_lcu) | (선택) LCU 지원 인스턴스에 대한 설정 `lcu` 블록 내용.<br>    (선택) `enabled` - LCU 지원 인스턴스를 활성화 할지에 대한 여부. Default: `false`<br>    (선택) `type` - LCU 지원 인스턴스 type `https://www.tencentcloud.com/document/product/214/54820?has_map=1` 참고. `STANDARD`, `ADVANCED_1`, `ADVANCED_2`, `SUPER_LARGE_1`, `SUPER_LARGE_2`, `SUPER_LARGE_3`, `SUPER_LARGE_4` 설정 가능. Default: `STANDARD` | <pre>object({<br>    enabled = optional(bool, false)<br>    type    = optional(string, "STANDARD")<br>  })</pre> | `{}` | no |
 | <a name="input_listeners"></a> [listeners](#input\_listeners) | (선택) load balancer 리스너 목록 입니다. `listeners` 블록 내용.<br>    (필수) `port` - load balancer 리스너 포트 정보.<br>    (필수) `protocol` - load balancer 리스너 protocol 정보. 가능 한 값`HTTP` and `HTTPS`.<br>    (선택) `rules` - 리스너에 정의되는 규칙에 따라 로드 밸런서가 하나 이상의 대상 그룹에 있는 대상으로 요청을 라우팅하는 방법을 정의.<br>    (선택) `tls` - TLS Listener 에 필요한 설정. `protocol` 이 `HTTPS` 일때 사용. `tls` 블록 내용.<br>      (선택) `certificate_mode` - 인증서 유형을 지정합니다 유효한 값. `UNIDIRECTIONAL`, `MUTUAL` Default: `UNIDIRECTIONAL`.<br>      (선택) `certificate` - SSL certificate arn.<br>      (선택) `certificate_ca` - 클라이언트 인증서 ID<br>      (선택) `sni_enabled` - SNI 활성화 여부 Default: `false`. | `any` | `[]` | no |
@@ -58,6 +62,7 @@
 | <a name="output_is_public"></a> [is\_public](#output\_is\_public) | load balancer public 으로 할당중인지 여부 |
 | <a name="output_listeners"></a> [listeners](#output\_listeners) | load balancer listener 리스트 |
 | <a name="output_name"></a> [name](#output\_name) | load balancer Name |
+| <a name="output_public_ip"></a> [public\_ip](#output\_public\_ip) | load balancer Public IP |
 | <a name="output_subnet_id"></a> [subnet\_id](#output\_subnet\_id) | load balancer 가 생성된 Subnet ID |
 | <a name="output_vpc_id"></a> [vpc\_id](#output\_vpc\_id) | load balancer 가 생성된 VPC ID |
 | <a name="output_zone_id"></a> [zone\_id](#output\_zone\_id) | load balancer zone |
