@@ -62,6 +62,13 @@ variable "security_groups" {
   nullable    = false
 }
 
+variable "load_balancer_pass_to_target" {
+  description = "(선택) CLB 에서 오는 흐름을 허용하는지 여부. `true` 일시 CLB 보안그룹만 확인하거나 CLB 와 백엔드 인스턴스 보안그룹을 모두 확인. Default: `true`"
+  type        = bool
+  default     = true
+  nullable    = false
+}
+
 variable "availability_zones" {
   description = "(선택) load balancer 의 cross zone 설정 리스트에 `첫번째`는 `master zone`. `두번째`는 `slave zone` 으로 설정."
   type        = list(string)
@@ -133,9 +140,26 @@ variable "tags" {
   default     = {}
 }
 
-variable "listeners" {
+variable "layer7_listeners" {
   description = <<EOF
-  (선택) load balancer 리스너 목록 입니다. `listeners` 블록 내용.
+  (선택) load balancer layer7 리스너 목록 입니다. `layer7_listeners` 블록 내용.
+    (필수) `port` - load balancer 리스너 포트 정보.
+    (필수) `protocol` - load balancer 리스너 protocol 정보. 가능 한 값`HTTP` and `HTTPS`.
+    (선택) `rules` - 리스너에 정의되는 규칙에 따라 로드 밸런서가 하나 이상의 대상 그룹에 있는 대상으로 요청을 라우팅하는 방법을 정의.
+    (선택) `tls` - TLS Listener 에 필요한 설정. `protocol` 이 `HTTPS` 일때 사용. `tls` 블록 내용.
+      (선택) `certificate_mode` - 인증서 유형을 지정합니다 유효한 값. `UNIDIRECTIONAL`, `MUTUAL` Default: `UNIDIRECTIONAL`.
+      (선택) `certificate` - SSL certificate arn.
+      (선택) `certificate_ca` - 클라이언트 인증서 ID
+      (선택) `sni_enabled` - SNI 활성화 여부 Default: `false`.
+  EOF
+  type        = any
+  default     = []
+  nullable    = false
+}
+
+variable "layer4_listeners" {
+  description = <<EOF
+  (선택) load balancer layer4 리스너 목록 입니다. `layer4_listeners` 블록 내용.
     (필수) `port` - load balancer 리스너 포트 정보.
     (필수) `protocol` - load balancer 리스너 protocol 정보. 가능 한 값 `TCP`, `TCP_TLS`, `UDP`.
     (선택) `health_check` - load balancer 리스너 health check 정보.

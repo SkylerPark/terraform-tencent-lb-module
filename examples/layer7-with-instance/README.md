@@ -19,7 +19,7 @@
 | Name | Source | Version |
 |------|--------|---------|
 | <a name="module_instance"></a> [instance](#module\_instance) | git::https://github.com/SkylerPark/terraform-tencent-cvm-module.git//modules/instance/ | tags/1.0.5 |
-| <a name="module_layer7"></a> [layer7](#module\_layer7) | ../../modules/layer7-instance | n/a |
+| <a name="module_layer7_clb"></a> [layer7\_clb](#module\_layer7\_clb) | ../../modules/instance | n/a |
 | <a name="module_layer7_security_group"></a> [layer7\_security\_group](#module\_layer7\_security\_group) | git::https://github.com/SkylerPark/terraform-tencent-vpc-module.git//modules/security-group/ | tags/1.2.0 |
 | <a name="module_parksm_attachment_v1"></a> [parksm\_attachment\_v1](#module\_parksm\_attachment\_v1) | ../../modules/target-attachment | n/a |
 | <a name="module_public_route_table"></a> [public\_route\_table](#module\_public\_route\_table) | git::https://github.com/SkylerPark/terraform-tencent-vpc-module.git//modules/route-table/ | tags/1.2.0 |

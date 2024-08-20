@@ -1,10 +1,10 @@
-module "layer7_security_group" {
+module "clb_security_group" {
   source = "git::https://github.com/SkylerPark/terraform-tencent-vpc-module.git//modules/security-group/?ref=tags/1.2.0"
   name   = "parksm-test-sg"
   ingress_rules = [
     {
       action     = "ACCEPT"
-      port       = "80,443"
+      port       = "80,443,8080"
       protocol   = "TCP"
       ipv4_cidrs = ["0.0.0.0"]
     }
@@ -20,15 +20,32 @@ module "layer7_security_group" {
   ]
 }
 
-module "layer7_clb" {
+module "clb" {
   source = "../../modules/instance"
   name   = "parksm-lb"
 
   is_public = true
   vpc_id    = module.vpc.id
 
-  security_groups   = [module.layer7_security_group.id]
+  security_groups   = [module.clb_security_group.id]
   bandwidth_max_out = 2048
+
+  layer4_listeners = [
+    {
+      port     = 8080
+      protocol = "TCP"
+      health_check = {
+        enabled             = true
+        interval            = 2
+        timeout             = 2
+        healthy_threshold   = 3
+        unhealthy_threshold = 3
+        port                = 8080
+        type                = "TCP"
+      }
+      load_balancing_algorithm_type = "LEAST_CONN"
+    }
+  ]
 
   layer7_listeners = [
     {
@@ -74,11 +91,24 @@ module "layer7_clb" {
   ]
 }
 
-module "parksm_attachment_v1" {
+module "layer4_attachment_8080" {
   source        = "../../modules/target-attachment"
-  load_balancer = module.layer7_clb.id
-  listener      = module.layer7_clb.layer7_listeners["80"].id
-  rule          = module.layer7_clb.layer7_listeners["80"].rules["test.com/"].id
+  load_balancer = module.clb.id
+  listener      = module.clb.layer4_listeners["8080"].id
+  targets = [
+    for instance, value in local.instances : {
+      instance_id = module.instance[instance].id
+      port        = 8080
+      weight      = 100
+    } if value.is_lb
+  ]
+}
+
+module "layer7_attachment_80" {
+  source        = "../../modules/target-attachment"
+  load_balancer = module.clb.id
+  listener      = module.clb.layer7_listeners["80"].id
+  rule          = module.clb.layer7_listeners["80"].rules["test.com/"].id
   targets = [
     for instance, value in local.instances : {
       instance_id = module.instance[instance].id

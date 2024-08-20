@@ -28,10 +28,11 @@ resource "tencentcloud_clb_instance" "this" {
   project_id = var.project_id
   clb_name   = var.name
 
-  network_type    = local.is_public[var.is_public]
-  vpc_id          = var.vpc_id
-  subnet_id       = var.subnet_id
-  security_groups = var.security_groups
+  network_type                 = local.is_public[var.is_public]
+  vpc_id                       = var.vpc_id
+  subnet_id                    = var.subnet_id
+  load_balancer_pass_to_target = var.load_balancer_pass_to_target
+  security_groups              = var.security_groups
 
   log_set_id   = var.access_log.enabled ? module.access_log.log_set_id : null
   log_topic_id = var.access_log.enabled ? module.access_log.log_topic_id : null
@@ -51,15 +52,15 @@ resource "tencentcloud_clb_instance" "this" {
   tags = var.tags
 }
 
-module "listener" {
+module "layer7_listener" {
   source = "../layer7-listener"
   for_each = {
-    for listener in var.listeners :
+    for listener in var.layer7_listeners :
     listener.port => listener
   }
 
   load_balancer = tencentcloud_clb_instance.this.id
-  name          = "${var.name}-${each.key}"
+  name          = "${each.value.protocol}-${each.key}"
   port          = each.key
   protocol      = each.value.protocol
 
@@ -70,6 +71,29 @@ module "listener" {
     certificate      = try(each.value.tls.certificate, null)
     certificate_ca   = try(each.value.tls.certificate_ca, null)
     sni_enabled      = try(each.value.tls.sni_enabled, null)
+  }
+}
+
+module "layer4_listener" {
+  source = "../layer4-listener"
+  for_each = {
+    for listener in var.layer4_listeners :
+    listener.port => listener
+  }
+
+  load_balancer = tencentcloud_clb_instance.this.id
+  name          = "${each.value.protocol}-${each.key}"
+  port          = each.key
+  protocol      = each.value.protocol
+
+  health_check                  = try(each.value.health_check, {})
+  load_balancing_algorithm_type = each.value.load_balancing_algorithm_type
+  session_expire_time           = try(each.value.session_expire_time, null)
+
+  tls = {
+    certificate_mode = try(each.value.tls.certificate_mode, null)
+    certificate      = try(each.value.tls.certificate, null)
+    certificate_ca   = try(each.value.tls.certificate_ca, null)
   }
 }
 

@@ -20,8 +20,8 @@ module "layer4_security_group" {
   ]
 }
 
-module "layer4" {
-  source = "../../modules/layer4-instance"
+module "layer4_clb" {
+  source = "../../modules/instance"
   name   = "parksm-lb"
 
   is_public = true
@@ -30,12 +30,18 @@ module "layer4" {
   security_groups   = [module.layer4_security_group.id]
   bandwidth_max_out = 2048
 
-  listeners = [
+  layer4_listeners = [
     {
       port     = 80
       protocol = "TCP"
       health_check = {
-        enabled = true
+        enabled             = true
+        interval            = 2
+        timeout             = 2
+        healthy_threshold   = 3
+        unhealthy_threshold = 3
+        port                = 80
+        type                = "TCP"
       }
       load_balancing_algorithm_type = "LEAST_CONN"
     }
@@ -44,8 +50,8 @@ module "layer4" {
 
 module "parksm_attachment_v1" {
   source        = "../../modules/target-attachment"
-  load_balancer = module.layer4.id
-  listener      = module.layer4.listeners["80"].id
+  load_balancer = module.layer4_clb.id
+  listener      = module.layer4_clb.layer4_listeners["80"].id
   targets = [
     for instance, value in local.instances : {
       instance_id = module.instance[instance].id

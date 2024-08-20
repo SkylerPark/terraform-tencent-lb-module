@@ -46,9 +46,14 @@ output "is_public" {
   value       = var.is_public
 }
 
-output "listeners" {
-  description = "load balancer listener 리스트"
-  value       = module.listener
+output "layer4_listeners" {
+  description = "load balancer layer4 listener 리스트"
+  value       = module.layer4_listener
+}
+
+output "layer7_listeners" {
+  description = "load balancer layer7 listener 리스트"
+  value       = module.layer7_listener
 }
 
 output "public_ip" {
